@@ -76,6 +76,24 @@ Resolution order is:
 
 Migrating from the path-derived peer needs no action. The old id can always be recomputed locally, so recall still reaches memories written under it: with the default `peer_scope: "all"` the server's existing cross-peer sweep already covers them at zero cost, and with `peer_scope: "actor"` the plugin asks that peer separately. There is no deadline on this, and `peer.source: "cwd"` restores the old id outright.
 
+## Sender peers
+
+Claude Code and Codex can set `peerRole: "sender"` (alias `peer_role`) to use the same message/actor routing as OpenClaw's `peer_role=sender`. The default `workspace` keeps existing project routing. `captureSenderFilters` is an ordered list of `s` rules in the `captureFilters` syntax: the first matching rule replaces the original user prompt with a stable sender ID. Match the whole prompt, including its envelope; use the same ID for a participant across readers. Rules run before capture/query filters remove that envelope. The existing OpenClaw sanitizer permits ASCII letters, digits, underscores and hyphens; map non-ASCII display names to explicit stable IDs in the replacement.
+
+```json
+{
+  "plugin": {
+    "claude_code": {
+      "peerRole": "sender",
+      "captureSenderFilters": ["s#^From: ([A-Za-z0-9_-]+)\\n[\\s\\S]*$#sender-$1#"],
+      "ownerSenderId": "sender-alice"
+    }
+  }
+}
+```
+
+Configure the same fields under `plugin.codex` for Codex. Every identified user message gets its sender peer; assistant messages get no peer. `ownerSenderId` optionally exempts the account owner: when the extracted ID equals this value, both capture and recall omit the peer. Leaving it empty preserves OpenClaw's sender behavior. Recall uses the current prompt's sender as actor and does not query the old workspace peer as a legacy fallback. A missing sender leaves the request unscoped and recall logs a warning, as OpenClaw does. Capture filters still decide what to retain. Tool calls remain structured tool parts; this mode does not turn tool-sent replies into assistant prose or change server-side extraction ownership defaults. Existing project memories are retained in place.
+
 ## Recall Peer Scope
 
 `lib/recall-core.mjs` defaults to the broad recall mode and does not send a

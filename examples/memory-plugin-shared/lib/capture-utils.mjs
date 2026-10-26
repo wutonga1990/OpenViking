@@ -1,3 +1,4 @@
+import { extractSenderPeerId } from "./sender-peer.mjs";
 import { applyInputFilters, compileInputFilters } from "./input-filters.mjs";
 
 const TEXT_BLOCK_TYPES = new Set(["text", "input_text", "output_text"]);
@@ -506,7 +507,11 @@ export function extractCaptureTurns(rolloutEntries, cfg = {}) {
 
     const shaped = shapeCapturePayload(payload, role, cfg, { toolNameById });
     if (shaped.dropped || (!shaped.text && shaped.parts.length === 0)) continue;
-    turns.push({ role, text: shaped.parts.length ? shaped.signalText : shaped.text, parts: shaped.parts });
+    const turn = { role, text: shaped.parts.length ? shaped.signalText : shaped.text, parts: shaped.parts };
+    if (cfg.peerRole === "sender" && role === "user") {
+      turn.senderPeerId = extractSenderPeerId(extractTextFromPayload(payload), cfg) || "";
+    }
+    turns.push(turn);
   }
   return turns;
 }

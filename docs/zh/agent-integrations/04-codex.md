@@ -4,6 +4,8 @@
 
 源码：[examples/codex-memory-plugin](https://github.com/volcengine/OpenViking/tree/main/examples/codex-memory-plugin) | [博客：动机与效果展示](https://blog.openviking.ai/post/openviking-coding-agent/)
 
+可通过 `peerRole: "sender"`、`captureSenderFilters` 和可选的 `ownerSenderId` 启用按发送者路由；配置与缺少发送者时的行为见[Sender peers](../../../examples/memory-plugin-shared/README.md#sender-peers)。
+
 ## 安装
 
 Claude Code 和 Codex 共用同一个安装脚本。它会询问要安装的 harness 和 OpenViking 凭据；所有步骤幂等，可安全地重复执行。

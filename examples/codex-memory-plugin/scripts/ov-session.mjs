@@ -1,3 +1,4 @@
+import { resolveCapturePeerId } from "./shared/sender-peer.mjs";
 /**
  * Shared OpenViking HTTP + transcript helpers for the Codex capture hooks.
  *
@@ -24,7 +25,7 @@ import { sendSessionMessages } from "./shared/batch-send.mjs";
 export function makeFetchJSON(cfg, { getActorPeerId = () => "" } = {}) {
   const { fetchJSON: fetchJSONRes } = makeAgentFetchJSON(cfg, process.cwd(), {
     defaultTimeoutMs: cfg.captureTimeoutMs,
-    getActorPeerId,
+    getActorPeerId: cfg.peerRole === "sender" ? () => "" : getActorPeerId,
     // A capture hook would rather retry a body it cannot parse than record the
     // turn as sent.
     requireJsonBody: true,
@@ -176,7 +177,8 @@ export async function catchUpTurns({
     const body = turn.parts?.length
       ? { role: turn.role, parts: turn.parts }
       : { role: turn.role, content: turn.text };
-    if (activePeerId) body.peer_id = activePeerId;
+    const peerId = resolveCapturePeerId(turn, cfg, activePeerId);
+    if (peerId) body.peer_id = peerId;
     return body;
   });
 

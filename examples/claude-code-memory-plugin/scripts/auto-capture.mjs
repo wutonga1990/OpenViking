@@ -39,6 +39,7 @@ import { readJsonState, writeJsonState } from "./lib/state.mjs";
 import { getEffectivePeerId } from "./lib/workspace-peer.mjs";
 import { runHookStage } from "./shared/agent-hook-runtime.mjs";
 import { sendSessionMessages } from "./shared/batch-send.mjs";
+import { resolveCapturePeerId } from "./shared/sender-peer.mjs";
 import { shapeCaptureParts } from "./shared/capture-utils.mjs";
 
 if (!isPluginEnabled()) {
@@ -171,7 +172,8 @@ async function pushTurnsToOv(ovSessionId, turns, peerId = "", cfg = {}) {
     if (parts.length === 0) continue;
 
     const payload = { role: turn.role, parts };
-    if (peerId) payload.peer_id = peerId;
+    const messagePeerId = resolveCapturePeerId(turn, cfg, peerId);
+    if (messagePeerId) payload.peer_id = messagePeerId;
     payloads.push(payload);
   }
   const res = await sendSessionMessages(fetchJSON, ovSessionId, payloads, {
@@ -194,7 +196,8 @@ async function enqueueTurnsToPending(ovSessionId, turns, peerId = "", cfg = {}) 
     if (parts.length === 0) continue;
 
     const payload = { role: turn.role, parts };
-    if (peerId) payload.peer_id = peerId;
+    const messagePeerId = resolveCapturePeerId(turn, cfg, peerId);
+    if (messagePeerId) payload.peer_id = messagePeerId;
     const res = await enqueuePendingDirectly("addMessage", ovSessionId, payload);
     if (res.ok) queued++;
     else failed++;

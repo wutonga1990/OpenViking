@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+import { resolveRecallPeer } from "./shared/sender-peer.mjs";
+
 /**
  * Auto-Recall Hook Script for Claude Code (UserPromptSubmit).
  *
@@ -79,7 +81,8 @@ runHookStage({
   },
 }, async ({ cfg, input, cwd, sessionId }) => {
   let userPrompt = (input.prompt || "").trim();
-  const effectivePeer = getEffectivePeerId(cfg, { sessionId, cwd });
+  const effectivePeer = resolveRecallPeer(userPrompt, cfg,
+    getEffectivePeerId(cfg, { sessionId, cwd }), (message) => log("sender_missing", { message }));
   log("start", {
     query: userPrompt.slice(0, 200),
     queryLength: userPrompt.length,

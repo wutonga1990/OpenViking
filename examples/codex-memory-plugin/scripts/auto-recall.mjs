@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+import { resolveRecallPeer } from "./shared/sender-peer.mjs";
+
 /**
  * Auto-Recall Hook Script for Codex.
  *
@@ -97,7 +99,8 @@ runHookStage({
   const { input, cwd } = stage;
   usageTurnId = input.turn_id || null;
   cfg = stage.cfg;
-  effectivePeer = resolveEffectivePeerId({ cfg, cwd });
+  effectivePeer = resolveRecallPeer(input.prompt || "", cfg,
+    resolveEffectivePeerId({ cfg, cwd }), (message) => log("sender_missing", { message }));
   fetchJSON = makeFetchJSON();
 
   let userPrompt = (input.prompt || "").trim();

@@ -4,6 +4,8 @@ Give [Codex](https://developers.openai.com/codex) cross-session memory. Hooks ha
 
 Source: [examples/codex-memory-plugin](https://github.com/volcengine/OpenViking/tree/main/examples/codex-memory-plugin) | [Blog: Motivation & demo](https://blog.openviking.ai/post/openviking-coding-agent/)
 
+Sender routing is opt-in through `peerRole: "sender"`, `captureSenderFilters`, and the optional `ownerSenderId`. See [Sender peers](../../../examples/memory-plugin-shared/README.md#sender-peers) for the shared configuration and missing-sender behavior.
+
 ## Install
 
 Claude Code and Codex share one installer. It asks which harnesses to install and for your OpenViking credentials; every step is idempotent.

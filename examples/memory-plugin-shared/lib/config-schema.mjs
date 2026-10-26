@@ -149,6 +149,9 @@ export const KNOBS = [
   // dsh is the only reader. Its Experience usage records need the completed
   // tool results, so it captures them by default.
   { name: "captureToolResults", type: "bool", default: false, harness: { dsh: true }, env: "OPENVIKING_CAPTURE_TOOL_RESULTS", capability: "capture" },
+  { name: "peerRole", type: "enum", values: ["workspace", "sender"], default: "workspace", env: "OPENVIKING_PEER_ROLE", aliases: ["peer_role"], capability: "peer" },
+  { name: "ownerSenderId", type: "string", default: "", env: "OPENVIKING_OWNER_SENDER_ID", capability: "peer" },
+  { name: "captureSenderFilters", type: "list", default: [], env: "OPENVIKING_CAPTURE_SENDER_FILTERS", capability: "capture" },
   { name: "captureFilters", type: "list", default: [], env: "OPENVIKING_CAPTURE_FILTERS", capability: "capture" },
   // 0 means "derive from timeoutMs": a write gets a longer budget than a read.
   { name: "captureTimeoutMs", type: "int", default: 0, min: 0, max: 600000, env: "OPENVIKING_CAPTURE_TIMEOUT_MS", capability: "capture" },
